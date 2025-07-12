@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Borrow It Forward - Product Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 1em 0;
+            text-align: center;
+        }
+        nav {
+            background-color: #333;
+            overflow: hidden;
+        }
+        nav a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+        }
+        nav a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+        .container {
+            padding: 20px;
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #4CAF50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .product-detail {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        .product-detail img {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        .product-info {
+            flex-grow: 1;
+        }
+        .product-info h3 {
+            margin-top: 0;
+            font-size: 1.8em;
+            color: #333;
+        }
+        .product-info p {
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        .product-info .price {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #4CAF50;
+            margin-top: 15px;
+            display: block;
+        }
+        .borrow-form {
+            margin-top: 30px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        .borrow-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        .borrow-form input[type="text"],
+        .borrow-form input[type="email"],
+        .borrow-form input[type="number"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+        .borrow-form input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
+        }
+        .borrow-form input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1em 0;
+            margin-top: 20px;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Borrow It Forward</h1>
+        <p>Your Sustainable Sharing Hub</p>
+    </header>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="products.html">Products</a>
+        <a href="aboutus.html">About Us</a>
+        <a href="sponsor.html">Sponsors</a>
+    </nav>
+    <div class="container">
+        <h2 id="productTitle">Product Details</h2>
+        <div class="product-detail">
+            <img id="productImage" src="https://via.placeholder.com/300x200?text=Product+Image" alt="Product Image">
+            <div class="product-info">
+                <h3 id="productName"></h3>
+                <p id="productDescription"></p>
+                <span id="productPrice" class="price"></span>
+            </div>
+        </div>
+
+        <div class="borrow-form">
+            <h3>Borrow This Item</h3>
+            <form action="#" method="post">
+                <label for="name">Your Name:</label>
+                <input type="text" id="name" name="name" required>
+
+                <label for="email">Your Email:</label>
+                <input type="email" id="email" name="email" required>
+
+                <label for="duration">Borrow Duration (days):</label>
+                <input type="number" id="duration" name="duration" min="1" value="1" required>
+
+                <input type="submit" value="Request to Borrow">
+            </form>
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2025 Borrow It Forward. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('product');
+
+            const products = {
+                "toothbrush": {
+                    name: "Pre-Loved Toothbrush",
+                    description: "Perfectly good bristles, just needs a good rinse! Ideal for camping trips or emergency situations. You never know when you'll need one.",
+                    price: "$0.50 / day",
+                    image: "https://via.placeholder.com/300x200?text=Used+Toothbrush"
+                },
+                "leftshoe": {
+                    name: "Lone Left Sneaker (Size 9)",
+                    description: "Lost its partner in crime, but still has a lot of sole left! Great for practicing your one-footed balance or for very specific fashion statements.",
+                    price: "$1.00 / day",
+                    image: "https://via.placeholder.com/300x200?text=Single+Left+Shoe"
+                },
+                "holeypants": {
+                    name: "Designer Ripped Jeans (Authentic)",
+                    description: "These aren't just ripped, they're *artistically* distressed. Perfect for achieving that effortless, 'I just fought a bear' look. Medium size.",
+                    price: "$2.00 / day",
+                    image: "https://via.placeholder.com/300x200?text=Holey+Pants"
+                },
+                "crackedmug": {
+                    name: "Charming Cracked Coffee Mug",
+                    description: "Adds character to your morning brew! Holds liquid 90% of the time. Great conversation starter. For the truly adventurous coffee drinker.",
+                    price: "$0.25 / day",
+                    image: "https://via.placeholder.com/300x200?text=Cracked+Mug"
+                },
+                "brokenumbrella": {
+                    name: "Vintage 'Aerodynamic' Umbrella",
+                    description: "One broken spoke gives it a unique, wind-resistant design. Not ideal for heavy downpours, but excellent for light drizzles or as a prop.",
+                    price: "$0.75 / day",
+                    image: "https://via.placeholder.com/300x200?text=Broken+Umbrella"
+                },
+                "deflatedball": {
+                    name: "Slightly Deflated Soccer Ball",
+                    description: "Still kicks, just not as far! Perfect for casual park play or as a comfortable footrest. Less bounce, more control, right?",
+                    price: "$0.50 / day",
+                    image: "https://via.placeholder.com/300x200?text=Deflated+Ball"
+                },
+                "emptycerealbox": {
+                    name: "Collectible Empty Cereal Box",
+                    description: "Rare vintage 'Sugar Blaster Flakes' box. Excellent for storing small, flat items or as a nostalgic display piece. No cereal included (obviously).",
+                    price: "$0.10 / day",
+                    image: "https://via.placeholder.com/300x200?text=Empty+Cereal+Box"
+                },
+                "singleglove": {
+                    name: "Lonely Winter Glove (Right Hand)",
+                    description: "Keeps one hand warm and stylish. Ideal for drivers who only open their window on one side, or for a very asymmetrical cold-weather look.",
+                    price: "$0.30 / day",
+                    image: "https://via.placeholder.com/300x200?text=Single+Glove"
+                },
+                "wobblychair": {
+                    name: "Characterful Wobbly Kitchen Chair",
+                    description: "Adds a dynamic element to your seating arrangements. Perfect for testing your core strength. Guaranteed to keep you on your toes!",
+                    price: "$1.50 / day",
+                    image: "https://via.placeholder.com/300x200?text=Wobbly+Chair"
+                },
+                "halfcandle": {
+                    name: "Ambiance-Ready Half-Burned Candle",
+                    description: "Already initiated, saves you the trouble of lighting it for the first time. Scent: 'Mystery.' Perfect for creating instant, partial coziness.",
+                    price: "$0.20 / day",
+                    image: "https://via.placeholder.com/300x200?text=Half-Used+Candle"
+                },
+                "bentfork": {
+                    name: "Artisanally Bent Dinner Fork",
+                    description: "Unique utensil for those who appreciate a personalized touch. Excellent for pasta or for reaching into hard-to-get places. Dishwasher safe, probably.",
+                    price: "$0.05 / day",
+                    image: "https://via.placeholder.com/300x200?text=Bent+Fork"
+                },
+                "fadedtshirt": {
+                    name: "Vintage Faded Band T-Shirt (M)",
+                    description: "The ultimate grunge accessory. Color is 'pre-washed out.' May or may not feature a band you've heard of. The more faded, the cooler.",
+                    price: "$1.00 / day",
+                    image: "https://via.placeholder.com/300x200?text=Faded+T-Shirt"
+                },
+                "onesock": {
+                    name: "The Lonesome Sock (Blue, Ankle)",
+                    description: "Still retains its vibrant blue hue. A testament to resilience. Ideal for puppet shows, dusting, or pairing with its equally lost counterpart.",
+                    price: "$0.02 / day",
+                    image: "https://via.placeholder.com/300x200?text=One+Sock"
+                },
+                "emptyframe": {
+                    name: "Awaiting Memories Picture Frame",
+                    description: "Ready for your next masterpiece! Or just a blank space to contemplate nothingness. Holds a standard 8x10 photo, or your hopes and dreams.",
+                    price: "$0.40 / day",
+                    image: "https://via.placeholder.com/300x200?text=Empty+Picture+Frame"
+                },
+                "dullscissors": {
+                    name: "Character-Enhanced Scissors",
+                    description: "Perfect for light cutting tasks, or for building hand strength. May require a bit more effort, but think of it as a workout!",
+                    price: "$0.15 / day",
+                    image: "https://via.placeholder.com/300x200?text=Dull+Scissors"
+                },
+                "flickerlight": {
+                    name: "Mood Lighting Flashlight",
+                    description: "Creates a dramatic, cinematic lighting effect with its intermittent flicker. Perfect for horror movie nights or very slow-motion investigations.",
+                    price: "$0.60 / day",
+                    image: "https://via.placeholder.com/300x200?text=Flickering+Flashlight"
+                },
+                "puzzlepiece": {
+                    name: "The Enigmatic Puzzle Piece",
+                    description: "A single piece from a 1000-piece landscape puzzle. A true collector's item for those who love a challenge, or just appreciate abstract art.",
+                    price: "$0.01 / day",
+                    image: "https://via.placeholder.com/300x200?text=Missing+Puzzle+Piece"
+                },
+                "outdatedmap": {
+                    name: "Historically Accurate Road Map (2005)",
+                    description: "Excellent for a trip down memory lane! May not be accurate for current road systems, but perfect for a vintage aesthetic or a history lesson.",
+                    price: "$0.20 / day",
+                    image: "https://via.placeholder.com/300x200?text=Outdated+Map"
+                },
+                "benthanger": {
+                    name: "Avant-Garde Clothes Hanger",
+                    description: "Designed for the truly unique garment. Its slight bend adds character and a surprisingly secure grip. A statement piece for your closet.",
+                    price: "$0.08 / day",
+                    image: "https://via.placeholder.com/300x200?text=Bent+Hanger"
+                },
+                "scratchedcd": {
+                    name: "Mysterious Scratched CD (No Case)",
+                    description: "What's on it? Nobody knows! A digital adventure awaits. May or may not play. Best for those who enjoy a bit of suspense in their music.",
+                    price: "$0.10 / day",
+                    image: "https://via.placeholder.com/300x200?text=Scratched+CD"
+                },
+                "missingbutton": {
+                    name: "The Orphaned Button (Brown, 2-Hole)",
+                    description: "Lost its way from a garment, now seeks a new purpose. Perfect for crafting, emergency repairs, or as a tiny, tactile fidget toy.",
+                    price: "$0.01 / day",
+                    image: "https://via.placeholder.com/300x200?text=Missing+Button"
+                },
+                "halfnotebook": {
+                    name: "Incomplete Journal of Intrigue",
+                    description: "Half-filled with someone else's thoughts, now ready for yours! Perfect for continuing a mysterious narrative or for simple note-taking.",
+                    price: "$0.25 / day",
+                    image: "https://via.placeholder.com/300x200?text=Half-Used+Notebook"
+                },
+                "frayedrope": {
+                    name: "Rustic, Authentically Frayed Rope",
+                    description: "Ideal for decoration, tying up small packages, or as a visual reminder of life's imperfections. Adds character to any setting.",
+                    price: "$0.12 / day",
+                    image: "https://via.placeholder.com/300x200?text=Frayed+Rope"
+                },
+                "brokencrayon": {
+                    name: "Artistic Stub of a Broken Crayon (Red)",
+                    description: "Still has plenty of color left! Perfect for small details, pointillism, or for teaching children about the beauty of imperfection.",
+                    price: "$0.03 / day",
+                    image: "https://via.placeholder.com/300x200?text=Broken+Crayola"
+                },
+                "bentspoon": {
+                    name: "The 'Matrix' Spoon (Slightly Bent)",
+                    description: "There is no spoon... well, there is, but it's a bit bent. Excellent for stirring coffee or for demonstrating fundamental physics concepts.",
+                    price: "$0.07 / day",
+                    image: "https://via.placeholder.com/300x200?text=Bent+Spoon"
+                },
+                "crackedphonecase": {
+                    name: "Distressed Smartphone Case (iPhone 8)",
+                    description: "Adds a rugged, lived-in look to your older model iPhone. The cracks tell a story. Provides *some* protection, mostly aesthetic.",
+                    price: "$0.35 / day",
+                    image: "https://via.placeholder.com/300x200?text=Cracked+Phone+Case"
+                }
+            };
+
+            const product = products[productId];
+
+            if (product) {
+                document.getElementById('productName').textContent = product.name;
+                document.getElementById('productDescription').textContent = product.description;
+                document.getElementById('productPrice').textContent = "Borrow Fee: " + product.price;
+                document.getElementById('productImage').src = product.image;
+                document.getElementById('productImage').alt = product.name;
+                document.getElementById('productTitle').textContent = product.name + " Details";
+            } else {
+                document.getElementById('productTitle').textContent = "Product Not Found";
+                document.getElementById('productName').textContent = "Oops!";
+                document.getElementById('productDescription').textContent = "The product you are looking for does not exist or has been borrowed indefinitely.";
+                document.getElementById('productPrice').textContent = "";
+                document.getElementById('productImage').src = "https://via.placeholder.com/300x200?text=Product+Not+Found";
+                document.querySelector('.borrow-form').style.display = 'none'; // Hide the form if product not found
+            }
+        });
+    </script>
+</body>
+</html>
