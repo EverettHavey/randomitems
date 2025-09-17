@@ -85,6 +85,9 @@
             border-top: 1px solid #eee;
             padding-top: 20px;
         }
+        .borrow-form h4 {
+            margin-top: 0;
+        }
         .borrow-form label {
             display: block;
             margin-bottom: 8px;
@@ -92,15 +95,61 @@
         }
         .borrow-form input[type="text"],
         .borrow-form input[type="email"],
-        .borrow-form input[type="number"] {
+        .borrow-form input[type="number"],
+        .borrow-form input[type="password"] {
             width: calc(100% - 22px);
             padding: 10px;
             margin-bottom: 15px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 1em;
+            box-sizing: border-box;
         }
-        .borrow-form input[type="submit"] {
+        .borrow-form input[type="radio"] {
+            margin-right: 5px;
+        }
+        .borrow-form .payment-options {
+            margin-bottom: 20px;
+        }
+        .borrow-form .payment-details {
+            display: none;
+        }
+        .borrow-form .card-info {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .borrow-form .card-info input {
+            flex-grow: 1;
+            width: auto;
+        }
+        .borrow-form .promo-code-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .borrow-form .promo-code-section input {
+            flex-grow: 1;
+            margin-bottom: 0;
+        }
+        .borrow-form .promo-code-section button {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            background-color: #f4f4f4;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .borrow-form .promo-code-section button:hover {
+            background-color: #e9e9e9;
+        }
+        .borrow-form .total-price {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .borrow-form button[type="submit"] {
             background-color: #4CAF50;
             color: white;
             padding: 12px 25px;
@@ -109,8 +158,10 @@
             cursor: pointer;
             font-size: 1.1em;
             transition: background-color 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
         }
-        .borrow-form input[type="submit"]:hover {
+        .borrow-form button[type="submit"]:hover {
             background-color: #45a049;
         }
         footer {
@@ -147,263 +198,170 @@
                 <span id="productPrice" class="price"></span>
             </div>
         </div>
-
         <div class="borrow-form">
-            <h3>Borrow This Item</h3>
+            <h3>Borrow and Pay</h3>
             <form action="thankyou.html" method="post">
+                <h4>Your Information</h4>
                 <label for="name">Your Name:</label>
                 <input type="text" id="name" name="name" required>
-
                 <label for="email">Your Email:</label>
                 <input type="email" id="email" name="email" required>
-
                 <label for="duration">Borrow Duration (days):</label>
                 <input type="number" id="duration" name="duration" min="1" value="1" required>
-
-                <input type="submit" value="Request to Borrow">
+                <hr>
+                <h4>Payment Details</h4>
+                <div class="payment-options">
+                    <label>
+                        <input type="radio" name="payment-method" value="credit-card" checked> Credit Card
+                    </label>
+                    <label>
+                        <input type="radio" name="payment-method" value="paypal"> PayPal
+                    </label>
+                    <label>
+                        <input type="radio" name="payment-method" value="gift-card"> Gift Card
+                    </label>
+                </div>
+                <div id="credit-card-details" class="payment-details">
+                    <label for="card-number">Credit Card Number</label>
+                    <input type="text" id="card-number" name="card-number" placeholder="XXXX-XXXX-XXXX-XXXX">
+                    <div class="card-info">
+                        <div>
+                            <label for="exp-date">Expiration Date</label>
+                            <input type="text" id="exp-date" name="exp-date" placeholder="MM/YY">
+                        </div>
+                        <div>
+                            <label for="cvv">CVV</label>
+                            <input type="text" id="cvv" name="cvv" placeholder="123">
+                        </div>
+                    </div>
+                    <label for="card-name">Name on Card</label>
+                    <input type="text" id="card-name" name="card-name">
+                </div>
+                <div id="paypal-details" class="payment-details" style="display:none;">
+                    <label for="paypal-username">PayPal Username</label>
+                    <input type="text" id="paypal-username" name="paypal-username" placeholder="Your PayPal Username">
+                    <p style="font-size: 0.9em; color: #666;">This helps us link the payment to your account. You will still be redirected to PayPal for final payment confirmation.</p>
+                </div>
+                <div id="gift-card-details" class="payment-details" style="display:none;">
+                    <label for="gift-card-code">Gift Card Code</label>
+                    <input type="text" id="gift-card-code" name="gift-card-code" placeholder="Enter gift card code">
+                </div>
+                <div class="promo-code-section">
+                    <label for="promo-code" style="margin: 0;">Promo Code:</label>
+                    <input type="text" id="promo-code" name="promo-code" placeholder="Enter code">
+                    <button type="button" id="apply-promo">Apply</button>
+                </div>
+                <div id="total-price" class="total-price">
+                    Total: $0.00
+                </div>
+                <button type="submit">Request to Borrow</button>
             </form>
         </div>
     </div>
     <footer>
         <p>&copy; 2025 Borrow It Forward. All rights reserved.</p>
     </footer>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const urlParams = new URLSearchParams(window.location.search);
             const productId = urlParams.get('product');
-
             const products = {
-                "toothbrush": {
-                    name: "Pre-Loved Toothbrush",
-                    description: "Perfectly good bristles, just needs a good rinse! Ideal for camping trips or emergency situations. You never know when you'll need one.",
-                    price: "$1.75 / day",
-                    image: "images/toothbrush.jpg"
-                },
-                "leftshoe": {
-                    name: "Lone Left Sneaker (Size 9)",
-                    description: "Lost its partner in crime, but still has a lot of sole left! Great for practicing your one-footed balance or for very specific fashion statements.",
-                    price: "$2.50 / day",
-                    image: "images/shoe.jpg"
-                },
-                "holeypants": {
-                    name: "Designer Ripped Jeans (Authentic)",
-                    description: "These aren't just ripped, they're *artistically* distressed. Perfect for achieving that effortless, 'I just fought a bear' look. Medium size.",
-                    price: "$3.50 / day",
-                    image: "images/jeans.jpg_medium"
-                },
-                "crackedmug": {
-                    name: "Charming Cracked Coffee Mug",
-                    description: "Adds character to your morning brew! Holds liquid 90% of the time. Great conversation starter. For the truly adventurous coffee drinker.",
-                    price: "$1.50 / day",
-                    image: "images/CrackedCoffeeMug.webp"
-                },
-                "brokenumbrella": {
-                    name: "Vintage 'Aerodynamic' Umbrella",
-                    description: "One broken spoke gives it a unique, wind-resistant design. Not ideal for heavy downpours, but excellent for light drizzles or as a prop.",
-                    price: "$2.00 / day",
-                    image: "images/brokenumbrella.jpg"
-                },
-                "deflatedball": {
-                    name: "Slightly Deflated Soccer Ball",
-                    description: "Still kicks, just not as far! Perfect for casual park play or as a comfortable footrest. Less bounce, more control, right?",
-                    price: "$1.75 / day",
-                    image: "images/deflatedball.jpg"
-                },
-                "emptycerealbox": {
-                    name: "Collectible Empty Cereal Box",
-                    description: "Rare vintage 'Sugar Blaster Flakes' box. Excellent for storing small, flat items or as a nostalgic display piece. No cereal included (obviously).",
-                    price: "$1.29 / day",
-                    image: "images/emptycerealbox.jpg"
-                },
-                "singleglove": {
-                    name: "Lonely Winter Glove (Right Hand)",
-                    description: "Keeps one hand warm and stylish. Ideal for drivers who only open their window on one side, or for a very asymmetrical cold-weather look.",
-                    price: "$1.60 / day",
-                    image: "images/singleglove.jpg"
-                },
-                "wobblychair": {
-                    name: "Characterful Wobbly Kitchen Chair",
-                    description: "Adds a dynamic element to your seating arrangements. Perfect for testing your core strength. Guaranteed to keep you on your toes!",
-                    price: "$2.75 / day",
-                    image: "images/wobblychair.webp"
-                },
-                "halfcandle": {
-                    name: "Ambiance-Ready Half-Burned Candle",
-                    description: "Already initiated, saves you the trouble of lighting it for the first time. Scent: 'Mystery.' Perfect for creating instant, partial coziness.",
-                    price: "$1.45 / day",
-                    image: "images/candle.webp"
-                },
-                "bentfork": {
-                    name: "Artisanally Bent Dinner Fork",
-                    description: "Unique utensil for those who appreciate a personalized touch. Excellent for pasta or for reaching into hard-to-get places. Dishwasher safe, probably.",
-                    price: "$1.29 / day",
-                    image: "images/bentfork.jpg"
-                },
-                "fadedtshirt": {
-                    name: "Vintage Faded Band T-Shirt (M)",
-                    description: "The ultimate grunge accessory. Color is 'pre-washed out.' May or may not feature a band you've heard of. The more faded, the cooler.",
-                    price: "$2.25 / day",
-                    image: "images/fadedtshirt.jpg_medium"
-                },
-                "onesock": {
-                    name: "The Lonesome Sock (Blue, Ankle)",
-                    description: "Still retains its vibrant blue hue. A testament to resilience. Ideal for puppet shows, dusting, or pairing with its equally lost counterpart.",
-                    price: "$1.26 / day",
-                    image: "images/sock.jpg_medium"
-                },
-                "emptyframe": {
-                    name: "Awaiting Memories Picture Frame",
-                    description: "Ready for your next masterpiece! Or just a blank space to contemplate nothingness. Holds a standard 8x10 photo, or your hopes and dreams.",
-                    price: "$1.70 / day",
-                    image: "images/emptypictureframe.webp"
-                },
-                "dullscissors": {
-                    name: "Character-Enhanced Scissors",
-                    description: "Perfect for light cutting tasks, or for building hand strength. May require a bit more effort, but think of it as a workout!",
-                    price: "$1.35 / day",
-                    image: "images/dullsizzers.jpg"
-                },
-                "flickerlight": {
-                    name: "Mood Lighting Flashlight",
-                    description: "Creates a dramatic, cinematic lighting effect with its intermittent flicker. Perfect for horror movie nights or very slow-motion investigations.",
-                    price: "$1.90 / day",
-                    image: "images/flickeringflashlight.webp"
-                },
-                "puzzlepiece": {
-                    name: "The Enigmatic Puzzle Piece",
-                    description: "A single piece from a 1000-piece landscape puzzle. A true collector's item for those who love a challenge, or just appreciate abstract art.",
-                    price: "$1.27 / day",
-                    image: "images/puzzlepeice.webp"
-                },
-                "outdatedmap": {
-                    name: "Historically Accurate Road Map (2005)",
-                    description: "Excellent for a trip down memory lane! May not be accurate for current road systems, but perfect for a vintage aesthetic or a history lesson.",
-                    price: "$$1.45 / day",
-                    image: "images/outdatedmap.jpg"
-                },
-                "benthanger": {
-                    name: "Avant-Garde Clothes Hanger",
-                    description: "Designed for the truly unique garment. Its slight bend adds character and a surprisingly secure grip. A statement piece for your closet.",
-                    price: "$1.30 / day",
-                    image: "images/hanger.jpg_medium"
-                },
-                "scratchedcd": {
-                    name: "Mysterious Scratched CD (No Case)",
-                    description: "What's on it? Nobody knows! A digital adventure awaits. May or may not play. Best for those who enjoy a bit of suspense in their music.",
-                    price: "$1.32 / day",
-                    image: "images/scratchedcd.jpg"
-                },
-                "missingbutton": {
-                    name: "The Orphaned Button (Brown, 2-Hole)",
-                    description: "Lost its way from a garment, now seeks a new purpose. Perfect for crafting, emergency repairs, or as a tiny, tactile fidget toy.",
-                    price: "$1.28 / day",
-                    image: "images/button.jpg_medium"
-                },
-                "halfnotebook": {
-                    name: "Incomplete Journal of Intrigue",
-                    description: "Half-filled with someone else's thoughts, now ready for yours! Perfect for continuing a mysterious narrative or for simple note-taking.",
-                    price: "$1.55 / day",
-                    image: "images/notebook.jpeg"
-                },
-                "frayedrope": {
-                    name: "Rustic, Authentically Frayed Rope",
-                    description: "Ideal for decoration, tying up small packages, or as a visual reminder of life's imperfections. Adds character to any setting.",
-                    price: "$1.38 / day",
-                    image: "images/rope.jpg"
-                },
-                "brokencrayon": {
-                    name: "Artistic Stub of a Broken Crayon (Red)",
-                    description: "Still has plenty of color left! Perfect for small details, pointillism, or for teaching children about the beauty of imperfection.",
-                    price: "$1.29 / day",
-                    image: "images/BrokenCrayola.jpg"
-                },
-                "bentspoon": {
-                    name: "The 'Matrix' Spoon (Slightly Bent)",
-                    description: "There is no spoon... well, there is, but it's a bit bent. Excellent for stirring coffee or for demonstrating fundamental physics concepts.",
-                    price: "$1.31 / day",
-                    image: "images/bentspoon.jpg"
-                },
-                "crackediphone": {
-                    name: "Authentically Distressed Apple iPhone",
-                    description: "Experience the rugged beauty of a truly lived-in device! This iPhone boasts a one-of-a-kind screen tapestry of cracks, telling a story of resilience and adventure. Perfect for those who crave a vintage aesthetic or just need a prop phone that still lights up (mostly). It's got character, and maybe a few data traces.",
-                    price: "$1.65 / day",
-                    image: "images/crackedphone.jpg"
-                },
-                "usedpoolfins": {
-                    name: "Pre-Loved Pool Fins (Size Varies)",
-                    description: "Propel yourself to new (or old) personal bests! These fins come with a history of aquatic adventures. Expect some scuffs, but ample propulsion for your next splash. Great for casual laps or just looking extra serious at the public pool.",
-                    price: "$1.80 / day",
-                    image: "images/usedfins.jpg"
-                },
-                "bookofmormon": {
-                    name: "The Book of Mormon",
-                    description: "Dive into a spiritual journey with this sacred text. Perfect for quiet contemplation, personal study, or understanding a different perspective. Gently used and ready for its next reader.",
-                    price: "$0.00 / day",
-                    image: "images/bookofmormon.png"
-                },
-                "walletwithcash": {
-                    name: "Wallet with Emergency Cash",
-                    description: "Find yourself a little short? This wallet comes pre-loaded with a small amount of emergency cash for those unexpected moments. Please use responsibly and return with the same amount if possible, or contribute what you can afford.",
-                    price: "$2.50 / day (plus cash amount)",
-                    image: "images/wallet.jpg"
-                },
-                "alarmclock": {
-                    name: "Alarm Clock",
-                    description: "Wake up to a gentle, sunrise-simulating light that gradually brightens your room, making it easier to start your day. It also features multiple natural alarm sounds, a customizable snooze function.",
-                    price: "$5.00 / day",
-                    image: "images/AlarmClock.webp"
-                },
-                "urbanminimalistwatch": {
-                    name: "The Urban Minimalist Watch",
-                    description: "A classic timepiece designed for modern life. This watch features a sleek, durable stainless steel case, a comfortable genuine leather strap, and a scratch-resistant mineral crystal face. Its minimalist design makes it suitable for both casual and formal wear.",
-                    price: "$2.50 / day",
-                    image: "images/watch.webp"
-                },
-                "halfsandwich": {
-                    name: "The Half Sandwich",
-                    description: "A classic choice for any hunger pangs, this half sandwich is made with your choice of savory deli meat, fresh cheese, crisp lettuce, and juicy tomato on artisan bread. It's the perfect size for a quick lunch or a light snack, offering a satisfying and delicious bite without being too much.",
-                    price: "$1.75 / day",
-                    image: "images/halfsandwich.webp"
-                },
-                "emptybottle": {
-                    name: "The Empty Water Bottle",
-                    description: "Stay hydrated on the go with this simple, durable water bottle. Made from high-quality, BPA-free plastic, it's designed for repeated use and easy cleaning. Its lightweight construction and leak-proof lid make it a convenient and eco-friendly choice for carrying with you anywhere. Just fill it up and go!",
-                    price: "$1.50 / day",
-                    image: "images/waterbottle.webp"
-                },
-                "grandpiano": {
-                    name: "The Concert Grand Piano",
-                    description: "Experience the pinnacle of musical expression with this magnificent concert grand piano. Its powerful, resonant sound, and exquisite craftsmanship provide an unparalleled playing experience. This instrument is perfect for professional musicians, serious students, or anyone who dreams of having a true showpiece in their home.",
-                    description: "Please note: Due to the size, weight, and delicate nature of this item, you are required to hire a professional, insured piano moving service to transport the grand piano. The cost of this service is not included in the borrowing fee. We can provide a list of trusted moving companies specializing in grand pianos upon request.",
-                    price: "$7.95 / day",
-                    image: "images/piano.webp"
-                },
-                "tv": {
-                    name: "The Portable Entertainment Hub TV",
-                    description: "This sleek and lightweight TV is perfect for movie nights, gaming sessions, or catching up on your favorite shows. With a vibrant HD display and built-in stereo speakers, it delivers a great viewing experience in any room. Its compact size makes it easy to set up and move, so you can transform any space into a personal theater.",
-                    price: "$4.75 / day",
-                    image: "images/tvborrow.webp"
-                },
-                "robux": {
-                    name: "Robux Emergency Fund",
-                    description: "Got a must-have item in the Roblox catalog but you're a little short on Robux? This emergency fund provides a small boost to help you get that virtual gear you've been wanting. Please use this responsibly for those unexpected in-game needs.",
-                    price: "$3.75 / day",
-                    image: "images/Robux.webp"
+                "toothbrush": { name: "Pre-Loved Toothbrush", description: "Perfectly good bristles, just needs a good rinse! Ideal for camping trips or emergency situations. You never know when you'll need one.", price: 1.75, image: "images/toothbrush.jpg" },
+                "leftshoe": { name: "Lone Left Sneaker (Size 9)", description: "Lost its partner in crime, but still has a lot of sole left! Great for practicing your one-footed balance or for very specific fashion statements.", price: 2.50, image: "images/shoe.jpg" },
+                "holeypants": { name: "Designer Ripped Jeans (Authentic)", description: "These aren't just ripped, they're *artistically* distressed. Perfect for achieving that effortless, 'I just fought a bear' look. Medium size.", price: 3.50, image: "images/jeans.jpg_medium" },
+                "crackedmug": { name: "Charming Cracked Coffee Mug", description: "Adds character to your morning brew! Holds liquid 90% of the time. Great conversation starter. For the truly adventurous coffee drinker.", price: 1.50, image: "images/CrackedCoffeeMug.webp" },
+                "brokenumbrella": { name: "Vintage 'Aerodynamic' Umbrella", description: "One broken spoke gives it a unique, wind-resistant design. Not ideal for heavy downpours, but excellent for light drizzles or as a prop.", price: 2.00, image: "images/brokenumbrella.jpg" },
+                "deflatedball": { name: "Slightly Deflated Soccer Ball", description: "Still kicks, just not as far! Perfect for casual park play or as a comfortable footrest. Less bounce, more control, right?", price: 1.75, image: "images/deflatedball.jpg" },
+                "emptycerealbox": { name: "Collectible Empty Cereal Box", description: "Rare vintage 'Sugar Blaster Flakes' box. Excellent for storing small, flat items or as a nostalgic display piece. No cereal included (obviously).", price: 1.29, image: "images/emptycerealbox.jpg" },
+                "singleglove": { name: "Lonely Winter Glove (Right Hand)", description: "Keeps one hand warm and stylish. Ideal for drivers who only open their window on one side, or for a very asymmetrical cold-weather look.", price: 1.60, image: "images/singleglove.jpg" },
+                "wobblychair": { name: "Characterful Wobbly Kitchen Chair", description: "Adds a dynamic element to your seating arrangements. Perfect for testing your core strength. Guaranteed to keep you on your toes!", price: 2.75, image: "images/wobblychair.webp" },
+                "halfcandle": { name: "Ambiance-Ready Half-Burned Candle", description: "Already initiated, saves you the trouble of lighting it for the first time. Scent: 'Mystery.' Perfect for creating instant, partial coziness.", price: 1.45, image: "images/candle.webp" },
+                "bentfork": { name: "Artisanally Bent Dinner Fork", description: "Unique utensil for those who appreciate a personalized touch. Excellent for pasta or for reaching into hard-to-get places. Dishwasher safe, probably.", price: 1.29, image: "images/bentfork.jpg" },
+                "fadedtshirt": { name: "Vintage Faded Band T-Shirt (M)", description: "The ultimate grunge accessory. Color is 'pre-washed out.' May or may not feature a band you've heard of. The more faded, the cooler.", price: 2.25, image: "images/fadedtshirt.jpg_medium" },
+                "onesock": { name: "The Lonesome Sock (Blue, Ankle)", description: "Still retains its vibrant blue hue. A testament to resilience. Ideal for puppet shows, dusting, or pairing with its equally lost counterpart.", price: 1.26, image: "images/sock.jpg_medium" },
+                "emptyframe": { name: "Awaiting Memories Picture Frame", description: "Ready for your next masterpiece! Or just a blank space to contemplate nothingness. Holds a standard 8x10 photo, or your hopes and dreams.", price: 1.70, image: "images/emptypictureframe.webp" },
+                "dullscissors": { name: "Character-Enhanced Scissors", description: "Perfect for light cutting tasks, or for building hand strength. May require a bit more effort, but think of it as a workout!", price: 1.35, image: "images/dullsizzers.jpg" },
+                "flickerlight": { name: "Mood Lighting Flashlight", description: "Creates a dramatic, cinematic lighting effect with its intermittent flicker. Perfect for horror movie nights or very slow-motion investigations.", price: 1.90, image: "images/flickeringflashlight.webp" },
+                "puzzlepiece": { name: "The Enigmatic Puzzle Piece", description: "A single piece from a 1000-piece landscape puzzle. A true collector's item for those who love a challenge, or just appreciate abstract art.", price: 1.27, image: "images/puzzlepeice.webp" },
+                "outdatedmap": { name: "Historically Accurate Road Map (2005)", description: "Excellent for a trip down memory lane! May not be accurate for current road systems, but perfect for a vintage aesthetic or a history lesson.", price: 1.45, image: "images/outdatedmap.jpg" },
+                "benthanger": { name: "Avant-Garde Clothes Hanger", description: "Designed for the truly unique garment. Its slight bend adds character and a surprisingly secure grip. A statement piece for your closet.", price: 1.30, image: "images/hanger.jpg_medium" },
+                "scratchedcd": { name: "Mysterious Scratched CD (No Case)", description: "What's on it? Nobody knows! A digital adventure awaits. May or may not play. Best for those who enjoy a bit of suspense in their music.", price: 1.32, image: "images/scratchedcd.jpg" },
+                "missingbutton": { name: "The Orphaned Button (Brown, 2-Hole)", description: "Lost its way from a garment, now seeks a new purpose. Perfect for crafting, emergency repairs, or as a tiny, tactile fidget toy.", price: 1.28, image: "images/button.jpg_medium" },
+                "halfnotebook": { name: "Incomplete Journal of Intrigue", description: "Half-filled with someone else's thoughts, now ready for yours! Perfect for continuing a mysterious narrative or for simple note-taking.", price: 1.55, image: "images/notebook.jpeg" },
+                "frayedrope": { name: "Rustic, Authentically Frayed Rope", description: "Ideal for decoration, tying up small packages, or as a visual reminder of life's imperfections. Adds character to any setting.", price: 1.38, image: "images/rope.jpg" },
+                "brokencrayon": { name: "Artistic Stub of a Broken Crayon (Red)", description: "Still has plenty of color left! Perfect for small details, pointillism, or for teaching children about the beauty of imperfection.", price: 1.29, image: "images/BrokenCrayola.jpg" },
+                "bentspoon": { name: "The 'Matrix' Spoon (Slightly Bent)", description: "There is no spoon... well, there is, but it's a bit bent. Excellent for stirring coffee or for demonstrating fundamental physics concepts.", price: 1.31, image: "images/bentspoon.jpg" },
+                "crackediphone": { name: "Authentically Distressed Apple iPhone", description: "Experience the rugged beauty of a truly lived-in device! This iPhone boasts a one-of-a-kind screen tapestry of cracks, telling a story of resilience and adventure. Perfect for those who crave a vintage aesthetic or just need a prop phone that still lights up (mostly). It's got character, and maybe a few data traces.", price: 1.65, image: "images/crackedphone.jpg" },
+                "usedpoolfins": { name: "Pre-Loved Pool Fins (Size Varies)", description: "Propel yourself to new (or old) personal bests! These fins come with a history of aquatic adventures. Expect some scuffs, but ample propulsion for your next splash. Great for casual laps or just looking extra serious at the public pool.", price: 1.80, image: "images/usedfins.jpg" },
+                "bookofmormon": { name: "The Book of Mormon", description: "Dive into a spiritual journey with this sacred text. Perfect for quiet contemplation, personal study, or understanding a different perspective. Gently used and ready for its next reader.", price: 0.00, image: "images/bookofmormon.png" },
+                "walletwithcash": { name: "Wallet with Emergency Cash", description: "Find yourself a little short? This wallet comes pre-loaded with a small amount of emergency cash for those unexpected moments. Please use responsibly and return with the same amount if possible, or contribute what you can afford.", price: 2.50, image: "images/wallet.jpg" },
+                "alarmclock": { name: "Alarm Clock", description: "Wake up to a gentle, sunrise-simulating light that gradually brightens your room, making it easier to start your day. It also features multiple natural alarm sounds, a customizable snooze function.", price: 5.00, image: "images/AlarmClock.webp" },
+                "urbanminimalistwatch": { name: "The Urban Minimalist Watch", description: "A classic timepiece designed for modern life. This watch features a sleek, durable stainless steel case, a comfortable genuine leather strap, and a scratch-resistant mineral crystal face. Its minimalist design makes it suitable for both casual and formal wear.", price: 2.50, image: "images/watch.webp" },
+                "halfsandwich": { name: "The Half Sandwich", description: "A classic choice for any hunger pangs, this half sandwich is made with your choice of savory deli meat, fresh cheese, crisp lettuce, and juicy tomato on artisan bread. It's the perfect size for a quick lunch or a light snack, offering a satisfying and delicious bite without being too much.", price: 1.75, image: "images/halfsandwich.webp" },
+                "emptybottle": { name: "The Empty Water Bottle", description: "Stay hydrated on the go with this simple, durable water bottle. Made from high-quality, BPA-free plastic, it's designed for repeated use and easy cleaning. Its lightweight construction and leak-proof lid make it a convenient and eco-friendly choice for carrying with you anywhere. Just fill it up and go!", price: 1.50, image: "images/waterbottle.webp" },
+                "grandpiano": { name: "The Concert Grand Piano", description: "Experience the pinnacle of musical expression with this magnificent concert grand piano. Its powerful, resonant sound, and exquisite craftsmanship provide an unparalleled playing experience. This instrument is perfect for professional musicians, serious students, or anyone who dreams of having a true showpiece in their home.", price: 7.95, image: "images/piano.webp" },
+                "tv": { name: "The Portable Entertainment Hub TV", description: "This sleek and lightweight TV is perfect for movie nights, gaming sessions, or catching up on your favorite shows. With a vibrant HD display and built-in stereo speakers, it delivers a great viewing experience in any room. Its compact size makes it easy to set up and move, so you can transform any space into a personal theater.", price: 4.75, image: "images/tvborrow.webp" },
+                "robux": { name: "Robux Emergency Fund", description: "Got a must-have item in the Roblox catalog but you're a little short on Robux? This emergency fund provides a small boost to help you get that virtual gear you've been wanting. Please use this responsibly for those unexpected in-game needs.", price: 3.75, image: "images/Robux.webp" }
+            };
+            
+            const promoCodes = {
+                "SAVE10": 0.10,
+                "LUCKY50": 0.50,
+                "FREE75": 0.75
+            };
+            
+            let currentProductPrice = 0;
+            let currentTotal = 0;
+
+            const updateTotalPrice = () => {
+                const duration = document.getElementById('duration').value;
+                const totalPriceEl = document.getElementById('total-price');
+                const priceSpan = document.getElementById('productPrice');
+
+                if (currentProductPrice > 0 && duration > 0) {
+                    currentTotal = currentProductPrice * duration;
+                    const promoCode = document.getElementById('promo-code').value.toUpperCase();
+                    if (promoCodes[promoCode]) {
+                        currentTotal = currentTotal * (1 - promoCodes[promoCode]);
+                    }
+                    totalPriceEl.textContent = `Total: $${currentTotal.toFixed(2)}`;
+                } else {
+                    totalPriceEl.textContent = "Total: $0.00";
+                }
+            };
+
+            const togglePaymentDetails = (method) => {
+                const details = document.querySelectorAll('.payment-details');
+                details.forEach(detail => detail.style.display = 'none');
+                
+                // Hide all required attributes
+                document.querySelectorAll('.borrow-form input').forEach(input => {
+                    if (input.name !== 'name' && input.name !== 'email' && input.name !== 'duration') {
+                        input.removeAttribute('required');
+                    }
+                });
+
+                // Show and set required for the selected method
+                const selectedDetails = document.getElementById(`${method}-details`);
+                if (selectedDetails) {
+                    selectedDetails.style.display = 'block';
+                    selectedDetails.querySelectorAll('input').forEach(input => {
+                        input.setAttribute('required', 'required');
+                    });
                 }
             };
 
             const product = products[productId];
-            
             if (product) {
                 document.getElementById('productName').textContent = product.name;
                 document.getElementById('productDescription').textContent = product.description;
-                document.getElementById('productPrice').textContent = "Borrow Fee: " + product.price;
+                document.getElementById('productPrice').textContent = `Borrow Fee: $${product.price.toFixed(2)} / day`;
                 document.getElementById('productImage').src = product.image;
                 document.getElementById('productImage').alt = product.name;
-                document.getElementById('productTitle').textContent = product.name + " Details";
+                document.getElementById('productTitle').textContent = `${product.name} Details`;
 
-                // Add a specific input for Robux
+                currentProductPrice = product.price;
+
                 if (productId === "robux") {
                     const form = document.querySelector('.borrow-form form');
                     const robuxInput = `
@@ -415,6 +373,8 @@
                     const durationLabel = document.querySelector('label[for="duration"]');
                     durationLabel.insertAdjacentHTML('beforebegin', robuxInput);
                 }
+                
+                updateTotalPrice();
 
             } else {
                 document.getElementById('productTitle').textContent = "Product Not Found";
@@ -422,8 +382,19 @@
                 document.getElementById('productDescription').textContent = "The product you are looking for does not exist or has been borrowed indefinitely.";
                 document.getElementById('productPrice').textContent = "";
                 document.getElementById('productImage').src = "https://via.placeholder.com/300x200?text=Product+Not+Found";
-                document.querySelector('.borrow-form').style.display = 'none'; // Hide the form if product not found
+                document.querySelector('.borrow-form').style.display = 'none';
             }
+
+            document.getElementById('duration').addEventListener('input', updateTotalPrice);
+            document.getElementById('apply-promo').addEventListener('click', updateTotalPrice);
+            document.querySelectorAll('input[name="payment-method"]').forEach(radio => {
+                radio.addEventListener('change', (event) => {
+                    togglePaymentDetails(event.target.value);
+                });
+            });
+
+            // Initial state: show credit card details and set as required
+            togglePaymentDetails('credit-card');
         });
     </script>
 </body>
