@@ -395,6 +395,52 @@
             const product = products[productId];
 
             if (product) {
+                document.addEventListener('DOMContentLoaded', function() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const productId = urlParams.get('product');
+
+                const products = {
+                    // ... all your product data ...
+                    "robux": {
+                    name: "Robux Emergency Fund",
+                    description: "Got a must-have item in the Roblox catalog but you're a little short on Robux? This emergency fund provides a small boost to help you get that virtual gear you've been wanting. Please use this responsibly for those unexpected in-game needs.",
+                    price: "$3.75 / day",
+                    image: "images/Robux.webp"
+                    }
+                    };
+
+                const product = products[productId];
+
+                    if (product) {
+                        document.getElementById('productName').textContent = product.name;
+                        document.getElementById('productDescription').textContent = product.description;
+                        document.getElementById('productImage').src = product.image;
+                        document.getElementById('productImage').alt = product.name;
+                        document.getElementById('productTitle').textContent = product.name + " Details";
+
+                        // This is the new conditional logic to handle the Robux product
+                        if (productId === "robux") {
+                        document.getElementById('productPrice').innerHTML = `
+                        <span class="price">Borrow Fee: ${product.price}</span>
+                        <div class="price-input">
+                            <label for="robux-amount">Robux Amount (R$):</label>
+                            <input type="number" id="robux-amount" name="robux-amount" min="1" placeholder="e.g., 800" required>
+                        </div>
+                        `;
+                    } else {
+                        // This is the default case for all other products
+                        document.getElementById('productPrice').textContent = "Borrow Fee: " + product.price;
+                    }
+
+                    } else {
+                    document.getElementById('productTitle').textContent = "Product Not Found";
+                    document.getElementById('productName').textContent = "Oops!";
+                    document.getElementById('productDescription').textContent = "The product you are looking for does not exist or has been borrowed indefinitely.";
+                    document.getElementById('productPrice').textContent = "";
+                    document.getElementById('productImage').src = "https://via.placeholder.com/300x200?text=Product+Not+Found";
+                    document.querySelector('.borrow-form').style.display = 'none';
+                    }
+                });
                 document.getElementById('productName').textContent = product.name;
                 document.getElementById('productDescription').textContent = product.description;
                 document.getElementById('productPrice').textContent = "Borrow Fee: " + product.price;
